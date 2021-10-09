@@ -7,7 +7,6 @@
 		"ccxt": "^1.57.82",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.22.0",
-		"fastify-webhook": "^2.1.0",
 		"simple-get": "^4.0.0"
 	}
 }

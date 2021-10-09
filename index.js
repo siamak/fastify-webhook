@@ -41,38 +41,40 @@ function capitalizeFirstLetter(string) {
 	return string[0].toUpperCase() + string.slice(1);
 }
 
-fastify.post("/bybit", async (request, reply) => {
-	const { symbol } = request.query;
-	const { strategy, comment, exchange: _ecx } = request.body;
-	const side = capitalizeFirstLetter(strategy.order_action);
-	const qty = Number(strategy.order_contracts);
-	const reduceOnly = comment.includes("Close");
+// const start = async () => {
+// 	try {
+// 		await fastify.listen(5000);
+// 	} catch (err) {
+// 		fastify.log.error(err);
+// 		process.exit(1);
+// 	}
+// };
 
-	try {
-		const order = await exchange.createOrder(symbol, "Market", side, qty, 0, {
-			reduce_only: reduceOnly,
-			time_in_force: "GoodTillCancel",
-		});
+async function app(fastify, options) {
+	fastify.post("/bybit", async (request, reply) => {
+		const { symbol } = request.query;
+		const { strategy, comment, exchange: _ecx } = request.body;
+		const side = capitalizeFirstLetter(strategy.order_action);
+		const qty = Number(strategy.order_contracts);
+		const reduceOnly = comment.includes("Close");
 
-		console.log(order);
+		try {
+			const order = await exchange.createOrder(symbol, "Market", side, qty, 0, {
+				reduce_only: reduceOnly,
+				time_in_force: "GoodTillCancel",
+			});
 
-		sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
-		sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
+			console.log(order);
 
-		reply.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
-	} catch (error) {
-		sendMessage(error.message);
-		reply.status(400).send(error);
-	}
-});
+			sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
+			sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
 
-const start = async () => {
-	try {
-		await fastify.listen(5000);
-	} catch (err) {
-		fastify.log.error(err);
-		process.exit(1);
-	}
-};
+			reply.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
+		} catch (error) {
+			sendMessage(error.message);
+			reply.status(400).send(error);
+		}
+	});
+}
 
-start();
+module.exports = app;

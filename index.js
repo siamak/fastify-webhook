@@ -1,8 +1,3 @@
-const fastify = require("fastify")({
-	logger: {
-		level: "info",
-	},
-});
 require("dotenv").config();
 const ccxt = require("ccxt");
 const get = require("simple-get");

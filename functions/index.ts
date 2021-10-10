@@ -84,15 +84,16 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 				await sendMessage(
 					`
 🌕 *${ticker}*
+
 ${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
 
 💰 Enter price: *${strategy.order_price}*
 
 🧮 Qty: *${strategy.order_contracts}*
 
-🗒 Comment: *${comment}* — ${order?.data?.orderId}
+🗒 Comment: *${comment}* — 123
 
-*${_ecx}*`
+[*${_ecx}*]`
 				);
 			} else {
 				await sendMessage(`[Kucoin]: ${order?.msg}`);
@@ -153,6 +154,7 @@ ${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
 
 		await sendMessage(`
 🌕 *${ticker}*
+
 ${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
 
 💰 Enter price: *${strategy.order_price}*
@@ -161,7 +163,7 @@ ${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
 
 🗒 Comment: *${comment}* — 123
 
-*${_ecx}*
+[*${_ecx}*]
 `);
 		res.status(200).send({
 			message: "Print",

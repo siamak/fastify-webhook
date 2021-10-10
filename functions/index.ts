@@ -33,7 +33,7 @@ const exchange = new ccxt.bybit({
 	secret: PRIVATE_KEY,
 	enableRateLimit: true,
 });
-exchange.setSandboxMode(true);
+// exchange.setSandboxMode(true);
 
 function capitalizeFirstLetter(string: string) {
 	return string[0].toUpperCase() + string.slice(1);

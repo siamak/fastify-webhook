@@ -1,8 +1,10 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
 import ccxt from "ccxt";
 import get from "simple-get";
+import dotenv from "dotenv";
 import { RouteGenericQuery } from "./interface";
-require("dotenv").config();
+
+dotenv.config();
 
 const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 

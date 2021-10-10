@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
 import ccxt from "ccxt";
-import p from "phin";
+import superagent from "superagent";
 import dotenv from "dotenv";
 import { RouteGenericQuery } from "./interface";
 
@@ -11,18 +11,17 @@ const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 async function sendMessage(text: string) {
 	const opts = {
 		url: `https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`,
-		method: "POST",
-		body: JSON.stringify({
+		body: {
 			chat_id: TELEGRAM_CHAT_ID,
 			text,
 			parse_mode: "markdown",
-		}),
+		},
 		headers: {
 			"Content-Type": "application/json",
 		},
 	};
 
-	const res = await p(opts);
+	const res = await superagent.post(opts.url).send(opts.body);
 
 	return res;
 }

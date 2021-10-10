@@ -78,7 +78,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		const qty = Number(strategy.order_contracts);
 		const reduceOnly = comment.includes("Close");
 
-		await sendMessage(`${JSON.stringify({ strategy, comment, _ecx, symbol, side, reduceOnly })}`);
+		await sendMessage(`${JSON.stringify({ strategy, comment, _ecx, symbol, side, reduceOnly }, null, 2)}`);
 		res.status(200).send({
 			message: "Print",
 		});

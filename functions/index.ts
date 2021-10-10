@@ -46,7 +46,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		const { strategy, comment, exchange: _ecx } = req.body;
 		const side = capitalizeFirstLetter(strategy.order_action);
 		const qty = Number(strategy.order_contracts);
-		const reduceOnly = comment.includes("Close");
+		// const reduceOnly = comment.includes("Close");
 
 		try {
 			// const order = await apiLive.getAccountOverview({
@@ -63,7 +63,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 				leverage: "5",
 				size: qty,
 				// price: 100,
-				reduceOnly,
+				// reduceOnly,
 			});
 			// const order = await apiLive.getContract("AXSUSDTM");
 			// const order = await exchange.loadMarkets();

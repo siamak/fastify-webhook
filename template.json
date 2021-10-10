@@ -1,0 +1,25 @@
+{
+	"passphase": "1715f14d-513a-4257-b681-b5e16b186980",
+	"time": "{{time}}",
+	"exchange": "{{exchange}}",
+	"ticker": "{{ticker}}",
+	"comment": "{{strategy.order.comment}}",
+	"bar": {
+		"open": "{{open}}",
+		"high": "{{high}}",
+		"low": "{{low}}",
+		"close": "{{close}}",
+		"volume": "{{volume}}"
+	},
+	"strategy": {
+		"position_size": "{{strategy.position_size}}",
+		"order_action": "{{strategy.order.action}}",
+		"order_contracts": "{{strategy.order.contracts}}",
+		"order_price": "{{strategy.order.price}}",
+		"order_id": "{{strategy.order.id}}",
+		"market_position": "{{strategy.market_position}}",
+		"market_size_position": "{{strategy.market_position}}",
+		"prev_market_position": "{{strategy.prev_market_position}}",
+		"prev_market_position_size": "{{strategy.prev_market_position_size}}"
+	}
+}

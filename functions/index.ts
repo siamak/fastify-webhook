@@ -65,7 +65,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		}
 	});
 
-	instance.post("/ping", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
+	instance.get("/ping", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
 		res.status(200).send({
 			message: "pong",
 		});

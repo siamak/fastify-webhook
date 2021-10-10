@@ -46,16 +46,14 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		const { strategy, comment, exchange: _ecx, ticker } = req.body;
 		const side = capitalizeFirstLetter(strategy.order_action);
 		const qty = Number(strategy.order_contracts);
-		// const reduceOnly = comment.includes("Close");
+		const isClose = comment.includes("Close");
 
 		try {
 			// const order = await apiLive.getAccountOverview({
 			// 	currency: "USDT",
 			// });
 
-			// AXSUSDTM
-			// https://github.com/mickomagallanes/kucoin-futures-node-api#trade-endpoints-private
-			const order = await apiLive.placeOrder({
+			const preOrder: any = {
 				clientOid: "e049b283-8f08-413f-bfa7-b96281d7e4f1",
 				side,
 				symbol,
@@ -64,7 +62,15 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 				size: qty,
 				// price: 100,
 				// reduceOnly,
-			});
+			};
+
+			if (isClose) {
+				preOrder.type = "limit";
+				preOrder.price = strategy.order_price;
+			}
+			// AXSUSDTM
+			// https://github.com/mickomagallanes/kucoin-futures-node-api#trade-endpoints-private
+			const order = await apiLive.placeOrder(preOrder);
 			// const order = await apiLive.getContract("AXSUSDTM");
 			// const order = await exchange.loadMarkets();
 			// const order = await exchange.loadMarkets();

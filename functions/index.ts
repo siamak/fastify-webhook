@@ -43,7 +43,7 @@ function capitalizeFirstLetter(string: string) {
 export default async function (instance: FastifyInstance, opts: FastifyServerOptions, done: any) {
 	instance.post("/kucoin", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
 		const { symbol } = req.query;
-		const { strategy, comment, exchange: _ecx } = req.body;
+		const { strategy, comment, exchange: _ecx, ticker } = req.body;
 		const side = capitalizeFirstLetter(strategy.order_action);
 		const qty = Number(strategy.order_contracts);
 		// const reduceOnly = comment.includes("Close");
@@ -79,9 +79,24 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 			console.log(order);
 
 			// await sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
-			await sendMessage(
-				`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}* — OrderId: ${order?.data?.orderId}`
-			);
+
+			if (order && order?.code === "200000") {
+				await sendMessage(
+					`
+🌕 *${ticker}*
+${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
+
+💰 Enter price: *${strategy.order_price}*
+
+🧮 Qty: *${strategy.order_contracts}*
+
+🗒 Comment: *${comment}* — ${order?.data?.orderId}
+
+*${_ecx}*`
+				);
+			} else {
+				await sendMessage(`[Kucoin]: ${order?.msg}`);
+			}
 
 			res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
 		} catch (error: any) {
@@ -131,12 +146,23 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 
 	instance.post("/print", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
 		const { symbol } = req.query;
-		const { strategy, comment, exchange: _ecx } = req.body;
+		const { strategy, comment, exchange: _ecx, ticker } = req.body;
 		const side = capitalizeFirstLetter(strategy.order_action);
 		const qty = Number(strategy.order_contracts);
 		const reduceOnly = comment.includes("Close");
 
-		await sendMessage(`${JSON.stringify({ strategy, comment, _ecx, symbol, side, reduceOnly }, null, 2)}`);
+		await sendMessage(`
+🌕 *${ticker}*
+${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
+
+💰 Enter price: *${strategy.order_price}*
+
+🧮 Qty: *${strategy.order_contracts}*
+
+🗒 Comment: *${comment}* — 123
+
+*${_ecx}*
+`);
 		res.status(200).send({
 			message: "Print",
 		});

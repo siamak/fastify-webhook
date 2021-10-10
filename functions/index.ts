@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
 import ccxt from "ccxt";
-import get from "simple-get";
+import p from "phin";
 import dotenv from "dotenv";
 import { RouteGenericQuery } from "./interface";
 
@@ -8,7 +8,7 @@ dotenv.config();
 
 const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 
-function sendMessage(text) {
+async function sendMessage(text) {
 	const opts = {
 		url: `https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`,
 		method: "POST",
@@ -21,10 +21,10 @@ function sendMessage(text) {
 			"Content-Type": "application/json",
 		},
 	};
-	get(opts, function (err, res) {
-		if (err) throw err;
-		// console.log(res);
-	});
+
+	const res = await p(opts);
+
+	return res;
 }
 
 console.log({ API_KEY, PRIVATE_KEY });
@@ -56,12 +56,12 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 
 			console.log(order);
 
-			sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
-			sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
+			await sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
+			await sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
 
 			res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
 		} catch (error) {
-			sendMessage(error.message);
+			await sendMessage(error.message);
 			res.status(400).send(error);
 		}
 	});
@@ -79,7 +79,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		const qty = Number(strategy.order_contracts);
 		const reduceOnly = comment.includes("Close");
 
-		sendMessage(`${JSON.stringify({ strategy, comment, _ecx, symbol, side, reduceOnly })}`);
+		await sendMessage(`${JSON.stringify({ strategy, comment, _ecx, symbol, side, reduceOnly })}`);
 		res.status(200).send({
 			message: "Print",
 		});

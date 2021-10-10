@@ -60,6 +60,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 
 			res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
 		} catch (error: any) {
+			console.log(error);
 			await sendMessage(error.message);
 			res.status(400).send(error);
 		}

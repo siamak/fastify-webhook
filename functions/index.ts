@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
 import ccxt from "ccxt";
 import get from "simple-get";
+import { RouteGenericQuery } from "./interface";
 require("dotenv").config();
 
 const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
@@ -37,82 +38,50 @@ function capitalizeFirstLetter(string) {
 	return string[0].toUpperCase() + string.slice(1);
 }
 
-// // const start = async () => {
-// // 	try {
-// // 		await fastify.listen(5000);
-// // 	} catch (err) {
-// // 		fastify.log.error(err);
-// // 		process.exit(1);
-// // 	}
-// // };
-
-// async function app(fastify, options) {
-// 	fastify.post("/bybit", async (request, reply) => {
-// 		const { symbol } = request.query;
-// 		const { strategy, comment, exchange: _ecx } = request.body;
-// 		const side = capitalizeFirstLetter(strategy.order_action);
-// 		const qty = Number(strategy.order_contracts);
-// 		const reduceOnly = comment.includes("Close");
-
-// 		try {
-// 			const order = await exchange.createOrder(symbol, "Market", side, qty, 0, {
-// 				reduce_only: reduceOnly,
-// 				time_in_force: "GoodTillCancel",
-// 			});
-
-// 			console.log(order);
-
-// 			sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
-// 			sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
-
-// 			reply.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
-// 		} catch (error) {
-// 			sendMessage(error.message);
-// 			reply.status(400).send(error);
-// 		}
-// 	});
-// }
-
-interface IQueryString {
-	name: string;
-}
-
-interface IParams {
-	name: string;
-}
-
-interface CustomRouteGenericParam {
-	Params: IParams;
-}
-
-interface CustomRouteGenericQuery {
-	Querystring: IQueryString;
-}
-
 export default async function (instance: FastifyInstance, opts: FastifyServerOptions, done) {
-	instance.get("/", async (req: FastifyRequest, res: FastifyReply) => {
+	instance.post("/bybit", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
+		const { symbol } = req.query;
+		const { strategy, comment, exchange: _ecx } = req.body;
+		const side = capitalizeFirstLetter(strategy.order_action);
+		const qty = Number(strategy.order_contracts);
+		const reduceOnly = comment.includes("Close");
+
+		try {
+			const order = await exchange.createOrder(symbol, "Market", side, qty, 0, {
+				reduce_only: reduceOnly,
+				time_in_force: "GoodTillCancel",
+			});
+
+			console.log(order);
+
+			sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
+			sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
+
+			res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
+		} catch (error) {
+			sendMessage(error.message);
+			res.status(400).send(error);
+		}
+	});
+
+	instance.post("/ping", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
 		res.status(200).send({
-			hello: "World",
+			message: "pong",
 		});
 	});
 
-	instance.register(
-		async (instance: FastifyInstance, opts: FastifyServerOptions, done) => {
-			instance.get("/", async (req: FastifyRequest<CustomRouteGenericQuery>, res: FastifyReply) => {
-				const { name = "" } = req.query;
-				res.status(200).send(`Hello ${name}`);
-			});
+	instance.post("/print", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
+		const { symbol } = req.query;
+		const { strategy, comment, exchange: _ecx } = req.body;
+		const side = capitalizeFirstLetter(strategy.order_action);
+		const qty = Number(strategy.order_contracts);
+		const reduceOnly = comment.includes("Close");
 
-			instance.get("/:name", async (req: FastifyRequest<CustomRouteGenericParam>, res: FastifyReply) => {
-				const { name = "" } = req.params;
-				res.status(200).send(`Hello ${name}`);
-			});
-			done();
-		},
-		{
-			prefix: "/hello",
-		}
-	);
+		sendMessage(`${JSON.stringify({ strategy, comment, _ecx, symbol, side, reduceOnly })}`);
+		res.status(200).send({
+			message: "Print",
+		});
+	});
 
 	done();
 }

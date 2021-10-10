@@ -59,7 +59,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 				clientOid: "e049b283-8f08-413f-bfa7-b96281d7e4f1",
 				side,
 				symbol,
-				type: "Market",
+				type: "market",
 				leverage: "5",
 				size: qty,
 				// price: 100,

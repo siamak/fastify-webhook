@@ -7,7 +7,9 @@
 	"dependencies": {
 		"@types/node": "^16.10.3",
 		"@types/superagent": "^4.1.13",
+		"bybit-api": "^2.1.1",
 		"ccxt": "^1.57.82",
+		"crypto": "^1.0.1",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.22.0",
 		"superagent": "^6.1.0"

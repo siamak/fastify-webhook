@@ -4,9 +4,13 @@
 	"main": "index.js",
 	"license": "MIT",
 	"dependencies": {
+		"@types/node": "^16.10.3",
 		"ccxt": "^1.57.82",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.22.0",
 		"phin": "^3.6.0"
+	},
+	"devDependencies": {
+		"@vercel/node": "^1.11.1"
 	}
 }

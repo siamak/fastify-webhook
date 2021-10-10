@@ -8,7 +8,7 @@ dotenv.config();
 
 const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 
-async function sendMessage(text) {
+async function sendMessage(text: string) {
 	const opts = {
 		url: `https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`,
 		method: "POST",
@@ -36,11 +36,11 @@ const exchange = new ccxt.bybit({
 });
 exchange.setSandboxMode(true);
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstLetter(string: string) {
 	return string[0].toUpperCase() + string.slice(1);
 }
 
-export default async function (instance: FastifyInstance, opts: FastifyServerOptions, done) {
+export default async function (instance: FastifyInstance, opts: FastifyServerOptions, done: any) {
 	instance.post("/bybit", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
 		const { symbol } = req.query;
 		const { strategy, comment, exchange: _ecx } = req.body;
@@ -49,7 +49,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		const reduceOnly = comment.includes("Close");
 
 		try {
-			const order = await exchange.createOrder(symbol, "Market", side, qty, 0, {
+			const order = await exchange.createOrder(symbol, "Market", side as any, qty, 0, {
 				reduce_only: reduceOnly,
 				time_in_force: "GoodTillCancel",
 			});
@@ -60,7 +60,7 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 			await sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
 
 			res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
-		} catch (error) {
+		} catch (error: any) {
 			await sendMessage(error.message);
 			res.status(400).send(error);
 		}

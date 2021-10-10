@@ -1,40 +1,41 @@
-// require("dotenv").config();
-// const ccxt = require("ccxt");
-// const get = require("simple-get");
+import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
+import ccxt from "ccxt";
+import get from "simple-get";
+require("dotenv").config();
 
-// const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
+const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 
-// function sendMessage(text) {
-// 	const opts = {
-// 		url: `https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`,
-// 		method: "POST",
-// 		body: JSON.stringify({
-// 			chat_id: TELEGRAM_CHAT_ID,
-// 			text,
-// 			parse_mode: "markdown",
-// 		}),
-// 		headers: {
-// 			"Content-Type": "application/json",
-// 		},
-// 	};
-// 	get(opts, function (err, res) {
-// 		if (err) throw err;
-// 		// console.log(res);
-// 	});
-// }
+function sendMessage(text) {
+	const opts = {
+		url: `https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`,
+		method: "POST",
+		body: JSON.stringify({
+			chat_id: TELEGRAM_CHAT_ID,
+			text,
+			parse_mode: "markdown",
+		}),
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
+	get(opts, function (err, res) {
+		if (err) throw err;
+		// console.log(res);
+	});
+}
 
-// console.log({ API_KEY, PRIVATE_KEY });
+console.log({ API_KEY, PRIVATE_KEY });
 
-// const exchange = new ccxt.bybit({
-// 	apiKey: API_KEY,
-// 	secret: PRIVATE_KEY,
-// 	enableRateLimit: true,
-// });
-// exchange.setSandboxMode(true);
+const exchange = new ccxt.bybit({
+	apiKey: API_KEY,
+	secret: PRIVATE_KEY,
+	enableRateLimit: true,
+});
+exchange.setSandboxMode(true);
 
-// function capitalizeFirstLetter(string) {
-// 	return string[0].toUpperCase() + string.slice(1);
-// }
+function capitalizeFirstLetter(string) {
+	return string[0].toUpperCase() + string.slice(1);
+}
 
 // // const start = async () => {
 // // 	try {
@@ -71,8 +72,6 @@
 // 		}
 // 	});
 // }
-
-import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
 
 interface IQueryString {
 	name: string;

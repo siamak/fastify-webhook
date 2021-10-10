@@ -1,6 +1,8 @@
+// ZLSMA
 //@version=4
-strategy("Siamak's Strategy", shorttitle="SMI", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, initial_capital=2000, currency=currency.USD, commission_type=strategy.commission.percent, commission_value=0.1, calc_on_every_tick=false)
+strategy("Siamak's Strategy", shorttitle="SMI", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, initial_capital=400, currency=currency.USD, commission_type=strategy.commission.percent, commission_value=0.075, calc_on_every_tick=false)
 
+Diff = input(title="Diff Length", type=input.float, defval=0.17)
 FromYear  = input(defval = 2021, title = "From Year", minval = 2017)
 FromMonth = input(defval = 10, title = "From Month", minval = 1, maxval = 12)
 FromDay   = input(defval = 1, title = "From Day", minval = 1, maxval = 31)
@@ -22,7 +24,7 @@ length = input(title="ATR Period", type=input.integer, defval=1)
 mult = input(title="ATR Multiplier", type=input.float, step=0.1, defval=1.85)
 showLabels = input(title="Show Buy/Sell Labels ?", type=input.bool, defval=true)
 useClose = input(title="Use Close Price for Extremums ?", type=input.bool, defval=false)
-// highlightState = input(title="Highlight State ?", type=input.bool, defval=false)
+highlightState = input(title="Highlight State ?", type=input.bool, defval=false)
 
 atr = mult * atr(length)
 
@@ -52,8 +54,8 @@ plotshape(sellSignal and showLabels ? shortStop : na, title="Sell Label", text="
 
 midPricePlot = plot(ohlc4, title="", style=plot.style_circles, linewidth=0, display=display.none, editable=false)
 
-// longFillColor = highlightState ? (dir == 1 ? longColor : na) : na
-// shortFillColor = highlightState ? (dir == -1 ? shortColor : na) : na
+longFillColor = highlightState ? (dir == 1 ? longColor : na) : na
+shortFillColor = highlightState ? (dir == -1 ? shortColor : na) : na
 // fill(midPricePlot, longStopPlot, title="Long State Filling", color=longFillColor)
 // fill(midPricePlot, shortStopPlot, title="Short State Filling", color=shortFillColor)
 
@@ -68,7 +70,7 @@ lsma = linreg(_src, _length, _offset)
 lsma2 = linreg(lsma, _length, _offset)
 eq= lsma-lsma2
 zlsma = lsma+eq
-plot(zlsma, color=color.yellow, linewidth=1)
+plot(zlsma, color=color.yellow, linewidth=2)
 
 // TSI
 // long = input(title="Long Length", type=input.integer, defval=3)
@@ -87,30 +89,36 @@ plot(zlsma, color=color.yellow, linewidth=1)
 // tsiBlueLine = tsi_value
 // tsiRedLine = ema(tsi_value, signal)
 
-longOnly  = close > zlsma
-shortOnly = open < zlsma
-// longOnly  = close > zlsma and low == open and (open + ((close - open) / 2) > zlsma)
-// shortOnly = close < zlsma and high == open and (open + ((open - close) / 2) > zlsma)
+longOnly  = buySignal and close > zlsma and low == open and (open + ((close - open) / 2) > zlsma)
+shortOnly = sellSignal and close < zlsma and high == open and (open + ((open - close) / 2) > zlsma)
+
+// plot(open + ((close - open) / 2), color=color.red, style=plot.style_line)
 
 
-plot(close, color=color.red, style=plot.style_cross)
-plot(open, color=color.green, style=plot.style_cross)
+LongSL = lowest(low, 3)
+// tp = lowest(open, 3) + (open - lowest(open, 3) * 1.5)
+// LongTP = strategy.position_avg_price + ((strategy.position_avg_price - LongSL) * 1.5)
+LongTP = (strategy.position_avg_price - LongSL) / (1/1.5) + strategy.position_avg_price
 
-// closeLong = crossunder(tsiBlueLine, tsiRedLine)
-// closeShort = crossover(tsiBlueLine, tsiRedLine)
-closeLong = (open > close) and (close < zlsma)
-closeShort = (close > open) and (close > zlsma)
+ShortSL = highest(high, 3)
+// tp = lowest(open, 3) + (open - lowest(open, 3) * 1.5)
+// ShortTP = (ShortSL - strategy.position_avg_price) + ( strategy.position_avg_price * 1.5)
+ShortTP = (strategy.position_avg_price - ShortSL) / (1/1.5) + strategy.position_avg_price
 
-// LongSL = lowest(low, 3)
-// LongTP = (strategy.position_avg_price - LongSL) / (1/1.5) + strategy.position_avg_price
-
-// ShortSL = highest(high, 3)
-// ShortTP = (strategy.position_avg_price - ShortSL) / (1/1.5) + strategy.position_avg_price
-
+// closeLong = (open > close) and (close < zlsma)
+// closeShort = (close > open) and (close > zlsma)
 
 if between_dates
-    strategy.entry("Long", strategy.long, when=(buySignal and longOnly), comment="Open Long trade")
-    strategy.entry("Short", strategy.short, when=(shortOnly and sellSignal), comment="Open Short trade")
+    strategy.entry("Long", strategy.long, when=(longOnly), comment="Open Long trade")
+    strategy.entry("Short", strategy.short, when=(shortOnly), comment="Open Short trade")
+    strategy.exit("Exit Long", from_entry="Long", limit=LongTP, loss=LongSL, comment="Exit Long")
+    strategy.exit("Exit Short", from_entry="Short", limit=ShortTP, loss=ShortSL, comment="Exit Short")
+    // strategy.entry("Short", strategy.short, when=(shortOnly and sellSignal), comment="Open Short trade")
 
-strategy.close("Long", when=closeLong, comment="Close Long")
-strategy.close("Short", when=closeShort, comment="Close Short")
+// strategy.close("Long", when=closeLong, comment="Close Long")
+// strategy.close("Short", when=closeShort, comment="Close Short")
+
+// plot(strategy.position_size > 0 ? LongSL : na, style=plot.style_line, color=color.red, linewidth=1, title="Long Fixed SL")
+// plot(strategy.position_size < 0 ? ShortSL : na, style=plot.style_line, color=color.red, linewidth=1, title="Short Fixed SL")
+// plot(strategy.position_size > 0 ? LongTP : na, style=plot.style_line, color=color.green, linewidth=1, title="Long Take Profit")
+// plot(strategy.position_size < 0 ? ShortTP : na, style=plot.style_line, color=color.green, linewidth=1, title="Short Take Profit")

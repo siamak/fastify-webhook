@@ -12,6 +12,7 @@
 		"crypto": "^1.0.1",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.22.0",
+		"kucoin-futures-node-api": "^1.0.6",
 		"superagent": "^6.1.0"
 	},
 	"devDependencies": {

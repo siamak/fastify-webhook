@@ -104,13 +104,20 @@ closeShort = (close > open) and (close > zlsma)
 // LongSL = lowest(low, 3)
 // LongTP = (strategy.position_avg_price - LongSL) / (1/1.5) + strategy.position_avg_price
 
+LongSL = strategy.position_avg_price * 0.996
+LongTP = strategy.position_avg_price * 1.005
+
 // ShortSL = highest(high, 3)
 // ShortTP = (strategy.position_avg_price - ShortSL) / (1/1.5) + strategy.position_avg_price
 
+ShortSL = strategy.position_avg_price * 1.004
+ShortTP = strategy.position_avg_price * 0.995
 
 if between_dates
     strategy.entry("Long", strategy.long, when=(buySignal and longOnly), comment="Open Long trade")
+	// strategy.exit("Exit Long", from_entry="Long", comment="Close Long", limit=LongTP, stop=LongSL)
     strategy.entry("Short", strategy.short, when=(shortOnly and sellSignal), comment="Open Short trade")
+	// strategy.exit("Exit Short", from_entry="Short", comment="Close Short", limit=ShortTP, stop=ShortSL)
 
 strategy.close("Long", when=closeLong, comment="Close Long")
 strategy.close("Short", when=closeShort, comment="Close Short")

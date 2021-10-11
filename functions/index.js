@@ -2,13 +2,11 @@ import superagent from "superagent";
 import { LinearClient } from "bybit-api";
 import dotenv from "dotenv";
 import _fastify from "fastify";
-import { createHmac } from "crypto";
-// import { any } from "./interface";
 
 const fastify = _fastify({ logger: true });
 dotenv.config();
 
-const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
+const { TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 
 const useLivenet = true;
 
@@ -47,33 +45,41 @@ function capitalizeFirstLetter(string) {
 
 fastify.post("/bybit", async (req, res) => {
 	const { symbol } = req.query;
-	const { strategy, comment, exchange: _ecx } = req.body;
+	const { strategy, comment, exchange: _ecx, ticker } = req.body;
 	const side = capitalizeFirstLetter(strategy.order_action);
 	const qty = Number(strategy.order_contracts);
 	const reduceOnly = comment.includes("Close");
 
 	console.log({ symbol });
+
 	try {
 		const order = await client.placeActiveOrder({
 			symbol,
 			side,
-			order_type: "Limit",
-			qty: 1,
-			price: 100,
-			reduce_only: false,
-			close_on_trigger: false,
+			order_type: "Market",
+			// price: 50,
+			qty,
+			reduce_only: reduceOnly,
+			close_on_trigger: reduceOnly,
 			time_in_force: "GoodTillCancel",
 		});
-		// const order = await exchange.fetchBalance({ type: "futures", currency: "USDT" });
-		// const order = await exchange.createOrder(symbol, "limit", side as any, qty, 0, {
-		// 	reduce_only: reduceOnly,
-		// 	time_in_force: "GoodTillCancel",
-		// });
 
-		console.log(123, { order });
+		console.log({ order });
 
-		// await sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
-		// await sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
+		await sendMessage(
+			`
+🌕 *${ticker}*
+
+${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
+
+💰 Enter price: *${strategy.order_price}*
+
+🧮 Qty: *${strategy.order_contracts}*
+
+🗒 Comment: *${comment}*
+
+[*${_ecx}*]`
+		);
 
 		res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
 	} catch (error) {

@@ -13,8 +13,8 @@ const { API_KEY, PRIVATE_KEY, TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
 const useLivenet = true;
 
 const client = new LinearClient(
-	API_KEY,
-	PRIVATE_KEY,
+	"XVXIx3n7hoFifCtK9C",
+	"7X2LZMAYnDSJhmusok13GO8Y3tWn8UhP9sP7",
 
 	// optional, uses testnet by default. Set to 'true' to use livenet.
 	useLivenet
@@ -58,10 +58,10 @@ fastify.post("/bybit", async (req, res) => {
 			symbol,
 			side,
 			order_type: "Limit",
-			qty: 5,
+			qty: 1,
 			price: 100,
-			reduce_only: reduceOnly,
-			close_on_trigger: reduceOnly,
+			reduce_only: false,
+			close_on_trigger: false,
 			time_in_force: "GoodTillCancel",
 		});
 		// const order = await exchange.fetchBalance({ type: "futures", currency: "USDT" });
@@ -70,7 +70,7 @@ fastify.post("/bybit", async (req, res) => {
 		// 	time_in_force: "GoodTillCancel",
 		// });
 
-		console.log({ order });
+		console.log(123, { order });
 
 		// await sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
 		// await sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);

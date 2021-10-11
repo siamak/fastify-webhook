@@ -141,11 +141,11 @@ ${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
 			const order = await client.placeActiveOrder({
 				symbol,
 				side,
-				order_type: "Limit",
-				price: 50,
+				order_type: "Market",
+				// price: 50,
 				qty,
-				// reduce_only: reduceOnly,
-				// close_on_trigger: reduceOnly,
+				reduce_only: reduceOnly,
+				close_on_trigger: reduceOnly,
 				time_in_force: "GoodTillCancel",
 			});
 

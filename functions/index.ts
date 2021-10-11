@@ -45,8 +45,8 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 		const { symbol } = req.query;
 		const { strategy, comment, exchange: _ecx, ticker } = req.body;
 		const side = capitalizeFirstLetter(strategy.order_action);
-		const qty = Number(strategy.order_contracts);
-		const isClose = comment.includes("Close");
+		const qty = strategy.order_contracts;
+		// const isClose = comment.includes("Close");
 
 		try {
 			// const order = await apiLive.getAccountOverview({
@@ -64,10 +64,11 @@ export default async function (instance: FastifyInstance, opts: FastifyServerOpt
 				// reduceOnly,
 			};
 
-			if (isClose) {
-				preOrder.type = "limit";
-				preOrder.price = strategy.order_price;
-			}
+			// if (isClose) {
+			// 	preOrder.type = "limit";
+			// 	preOrder.price = strategy.order_price;
+			// }
+
 			// AXSUSDTM
 			// https://github.com/mickomagallanes/kucoin-futures-node-api#trade-endpoints-private
 			const order = await apiLive.placeOrder(preOrder);

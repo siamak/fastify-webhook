@@ -6,7 +6,9 @@ import _fastify from "fastify";
 const fastify = _fastify({ logger: true });
 dotenv.config();
 
-const { TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
+// const { TELEGRAM_BOT, TELEGRAM_CHAT_ID } = process.env;
+const TELEGRAM_BOT = "1963096824:AAFIlbQieRRLu1G-Nk6466LV5h-fxsrrFO8";
+const TELEGRAM_CHAT_ID = "40554797";
 
 const useLivenet = true;
 

@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, FastifyServerOptions } from "fastify";
+import { LinearClient } from "bybit-api";
 import api from "kucoin-futures-node-api";
 import superagent from "superagent";
 import dotenv from "dotenv";
@@ -35,6 +36,19 @@ const config = {
 
 const apiLive = new api();
 apiLive.init(config);
+
+const useLivenet = true;
+
+const client = new LinearClient(
+	"XVXIx3n7hoFifCtK9C",
+	"7X2LZMAYnDSJhmusok13GO8Y3tWn8UhP9sP7",
+
+	// optional, uses testnet by default. Set to 'true' to use livenet.
+	useLivenet
+
+	// restClientOptions,
+	// requestLibraryOptions
+);
 
 function capitalizeFirstLetter(string: string) {
 	return string[0].toUpperCase() + string.slice(1);
@@ -113,38 +127,52 @@ ${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
 			res.status(400).send(error);
 		}
 	});
-	// instance.post("/bybit", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
-	// 	const { symbol } = req.query;
-	// 	const { strategy, comment, exchange: _ecx } = req.body;
-	// 	const side = capitalizeFirstLetter(strategy.order_action);
-	// 	const qty = Number(strategy.order_contracts);
-	// 	const reduceOnly = comment.includes("Close");
 
-	// 	console.log({ symbol });
+	instance.post("/bybit", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
+		const { symbol } = req.query;
+		const { strategy, comment, exchange: _ecx, ticker } = req.body;
+		const side = capitalizeFirstLetter(strategy.order_action);
+		const qty = Number(strategy.order_contracts);
+		const reduceOnly = comment.includes("Close");
 
-	// 	try {
-	// 		const order = await client.placeActiveOrder({
-	// 			symbol,
-	// 			side,
-	// 			order_type: "Market",
-	// 			qty,
-	// 			reduce_only: reduceOnly,
-	// 			close_on_trigger: reduceOnly,
-	// 			time_in_force: "GoodTillCancel",
-	// 		});
+		console.log({ symbol });
 
-	// 		console.log({ order });
+		try {
+			const order = await client.placeActiveOrder({
+				symbol,
+				side,
+				order_type: "Limit",
+				price: 50,
+				qty,
+				// reduce_only: reduceOnly,
+				// close_on_trigger: reduceOnly,
+				time_in_force: "GoodTillCancel",
+			});
 
-	// 		await sendMessage(`*${symbol}*\n${comment}\n*${qty}* — ${side}`);
-	// 		await sendMessage(`✅ Took on *${_ecx}* — *${side}* — *${symbol}* – QTY: *${qty}*`);
+			console.log({ order });
 
-	// 		res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
-	// 	} catch (error: any) {
-	// 		console.dir(error);
-	// 		await sendMessage(error.message);
-	// 		res.status(400).send(error);
-	// 	}
-	// });
+			await sendMessage(
+				`
+🌕 *${ticker}*
+
+${strategy.order_action === "buy" ? "❇️ Long" : "🔴 Short"}
+
+💰 Enter price: *${strategy.order_price}*
+
+🧮 Qty: *${strategy.order_contracts}*
+
+🗒 Comment: *${comment}*
+
+[*${_ecx}*]`
+			);
+
+			res.code(200).header("Content-Type", "application/json; charset=utf-8").send(order);
+		} catch (error: any) {
+			console.dir(error);
+			await sendMessage(error.message);
+			res.status(400).send(error);
+		}
+	});
 
 	instance.get("/ping", async (req: FastifyRequest<RouteGenericQuery>, res: FastifyReply) => {
 		res.status(200).send({

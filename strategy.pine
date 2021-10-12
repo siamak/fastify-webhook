@@ -98,8 +98,9 @@ plot(open, color=color.green, style=plot.style_cross)
 
 // closeLong = crossunder(tsiBlueLine, tsiRedLine)
 // closeShort = crossover(tsiBlueLine, tsiRedLine)
-closeLong = (open > close) and (close < zlsma)
-closeShort = (close > open) and (close > zlsma)
+
+// closeLong = (open > close) and (close < zlsma)
+// closeShort = (close > open) and (close > zlsma)
 
 // LongSL = lowest(low, 3)
 // LongTP = (strategy.position_avg_price - LongSL) / (1/1.5) + strategy.position_avg_price
@@ -115,9 +116,9 @@ ShortTP = strategy.position_avg_price * 0.995
 
 if between_dates
     strategy.entry("Long", strategy.long, when=(buySignal and longOnly), comment="Open Long trade")
-	// strategy.exit("Exit Long", from_entry="Long", comment="Close Long", limit=LongTP, stop=LongSL)
+	strategy.exit("Exit Long", from_entry="Long", comment="Close Long", limit=LongTP, stop=LongSL)
     strategy.entry("Short", strategy.short, when=(shortOnly and sellSignal), comment="Open Short trade")
-	// strategy.exit("Exit Short", from_entry="Short", comment="Close Short", limit=ShortTP, stop=ShortSL)
+	strategy.exit("Exit Short", from_entry="Short", comment="Close Short", limit=ShortTP, stop=ShortSL)
 
-strategy.close("Long", when=closeLong, comment="Close Long")
-strategy.close("Short", when=closeShort, comment="Close Short")
+// strategy.close("Long", when=closeLong, comment="Close Long")
+// strategy.close("Short", when=closeShort, comment="Close Short")

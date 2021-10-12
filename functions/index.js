@@ -65,11 +65,11 @@ fastify.post("/bybit", async (req, res) => {
 	try {
 		if (closeTrade) {
 			// global.currentQty
-			global.currentQty = 0;
-			preOrder.reduce_only = true;
-			// preOrder.order_type = "Market
-			preOrder.close_on_trigger = true;
-			order = await client.placeActiveOrder(preOrder);
+			// global.currentQty = 0;
+			// preOrder.reduce_only = true;
+			// // preOrder.order_type = "Market
+			// preOrder.close_on_trigger = true;
+			// order = await client.placeActiveOrder(preOrder);
 		} else {
 			const entryPrice = Number(strategy.order_price);
 			const { sl, tp } = CONSTANTS[side];

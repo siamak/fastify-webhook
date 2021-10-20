@@ -13,7 +13,7 @@ const CONSTANTS = {
 		tp: 1.005,
 	},
 	Sell: {
-		sl: 1.004,
+		sl: 1.005,
 		tp: 0.995,
 	},
 };

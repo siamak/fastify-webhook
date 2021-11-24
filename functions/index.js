@@ -5,7 +5,7 @@ import _fastify from "fastify";
 // dotenv.config();
 const fastify = _fastify({ logger: true });
 
-const TELEGRAM_BOT = "1963096824:AAFIlbQieRRLu1G-Nk6466LV5h-fxsrrFO8";
+const TELEGRAM_BOT = "1514539465:AAECN4y-wX12G7EgW7AQi9uTWoB6mxqUf9o";
 const TELEGRAM_CHAT_ID = "40554797";
 const CONSTANTS = {
 	Buy: {
@@ -19,6 +19,7 @@ const CONSTANTS = {
 };
 global.currentQty = 0;
 
+// const client = new LinearClient("MjUqLZNwgqwYJXA5Fl", "eQWPQ43YEc7uciXG1e5jcp05D9UmPq7RkI07", true);
 const client = new LinearClient("XVXIx3n7hoFifCtK9C", "7X2LZMAYnDSJhmusok13GO8Y3tWn8UhP9sP7", true);
 
 async function sendMessage(text) {
@@ -94,9 +95,12 @@ fastify.post("/bybit", async (req, res) => {
 			// preOrder.stop_loss = (Math.floor(entryPrice * sl * 100) / 100).toFixed(2) * 1;
 			// preOrder.take_profit = (Math.round(entryPrice * tp * 100) / 100).toFixed(2) * 1;
 
-			const op = side === "Buy";
-			preOrder.stop_loss = entryPrice * (op ? 1 - sl : 1 + sl);
-			preOrder.take_profit = entryPrice * (op ? 1 + tp : 1 - tp);
+			preOrder.stop_loss = (entryPrice * (1 - sl)).toFixed(4) * 1;
+			preOrder.take_profit = (entryPrice * (1 + tp)).toFixed(4) * 1;
+
+			console.log(preOrder);
+			// preOrder.stop_loss = entryPrice * (op ? 1 - sl : 1 + sl);
+			// preOrder.take_profit = entryPrice * (op ? 1 + tp : 1 - tp);
 			// preOrder.order_type = "Market"; // Entr to trade with Market
 			order = await client.placeActiveOrder(preOrder);
 
@@ -190,7 +194,7 @@ fastify.get("/ping", async (req, res) => {
 
 const start = async () => {
 	try {
-		await fastify.listen(5900);
+		await fastify.listen(1024);
 	} catch (err) {
 		fastify.log.error(err);
 		process.exit(1);

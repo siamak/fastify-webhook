@@ -194,7 +194,7 @@ fastify.get("/ping", async (req, res) => {
 
 const start = async () => {
 	try {
-		await fastify.listen(1024);
+		await fastify.listen(5900);
 	} catch (err) {
 		fastify.log.error(err);
 		process.exit(1);

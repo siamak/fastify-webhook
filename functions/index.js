@@ -9,12 +9,12 @@ const TELEGRAM_BOT = "1963096824:AAFIlbQieRRLu1G-Nk6466LV5h-fxsrrFO8";
 const TELEGRAM_CHAT_ID = "40554797";
 const CONSTANTS = {
 	Buy: {
-		sl: 0.996,
-		tp: 1.005,
+		sl: 0.75 * 0.01,
+		tp: 1.25 * 0.01,
 	},
 	Sell: {
-		sl: 1.005,
-		tp: 0.995,
+		sl: 0.75 * 0.01,
+		tp: 1.25 * 0.01,
 	},
 };
 global.currentQty = 0;
@@ -91,8 +91,12 @@ fastify.post("/bybit", async (req, res) => {
 				console.log("Close remained", remained);
 			}
 
-			preOrder.stop_loss = (Math.floor(entryPrice * sl * 100) / 100).toFixed(2) * 1;
-			preOrder.take_profit = (Math.round(entryPrice * tp * 100) / 100).toFixed(2) * 1;
+			// preOrder.stop_loss = (Math.floor(entryPrice * sl * 100) / 100).toFixed(2) * 1;
+			// preOrder.take_profit = (Math.round(entryPrice * tp * 100) / 100).toFixed(2) * 1;
+
+			const op = side === "Buy";
+			preOrder.stop_loss = entryPrice * (op ? 1 - sl : 1 + sl);
+			preOrder.take_profit = entryPrice * (op ? 1 + tp : 1 - tp);
 			// preOrder.order_type = "Market"; // Entr to trade with Market
 			order = await client.placeActiveOrder(preOrder);
 
